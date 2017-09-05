@@ -1,0 +1,8 @@
+[{
+  "modid": "wesserboysoverlays",
+  "name": "Overlays",
+  "description": "Adds some helpfull overlays to the game.",
+  "version": "1.0.0.0",
+  "mcversion": "1.12.1",
+  "authorList": ["Wesserboy"]
+}]
