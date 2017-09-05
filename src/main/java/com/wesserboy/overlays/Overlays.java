@@ -5,6 +5,7 @@ import org.lwjgl.input.Keyboard;
 import com.wesserboy.overlays.keybinds.ModKeybind;
 import com.wesserboy.overlays.keybinds.ModKeybindManager;
 import com.wesserboy.overlays.renderers.ChunkOverlay;
+import com.wesserboy.overlays.renderers.LightLevelOverlay;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -39,6 +40,14 @@ public class Overlays {
 			}
 		});
 		
+		/** Light level overlay **/
+		MinecraftForge.EVENT_BUS.register(new LightLevelOverlay());
+		ModKeybindManager.INSTANCE.addKeybind(new ModKeybind("lightleveloverlay", Keyboard.KEY_F7){
+			@Override
+			public void onKeyPress() {
+				LightLevelOverlay.INSTANCE.toggleState();
+			}
+		});
 		
 		
 		ModKeybindManager.INSTANCE.registerKeybinds();
