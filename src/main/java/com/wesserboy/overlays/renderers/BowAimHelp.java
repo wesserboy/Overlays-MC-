@@ -152,6 +152,8 @@ public class BowAimHelp {
 					
 					if(target != null){
 						// Render the target
+						GlStateManager.enableAlpha();
+						GlStateManager.enableBlend();
 						mc.getRenderManager().doRenderEntity(target, 0F, 0F, 0F, 0F, 1F, false);
 						
 						if(!(target instanceof EntityFallingBlock)){
@@ -163,8 +165,6 @@ public class BowAimHelp {
 							// Draw the arrow at that location
 							GlStateManager.translate(-(target.posX - actHitCoords.hitVec.x), -(target.posY - actHitCoords.hitVec.y), -(target.posZ - actHitCoords.hitVec.z));
 						}else{
-							GlStateManager.enableAlpha();
-							
 							BlockPos pos = hit.getBlockPos();
 							GlStateManager.translate(-0.5, 0, -0.5);
 							GlStateManager.translate(-(pos.getX() - hit.hitVec.x), -(pos.getY() - hit.hitVec.y), -(pos.getZ() - hit.hitVec.z));
