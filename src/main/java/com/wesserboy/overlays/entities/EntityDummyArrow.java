@@ -22,6 +22,15 @@ public class EntityDummyArrow extends EntityArrow{
 		return null;
 	}
 	
+	// These two overrides prevent the dummy-arrows from spawning water particles
+	@Override
+	public boolean isInWater() {
+		return false;
+	}
+	
+	@Override
+	protected void doWaterSplashEffect() {}
+	
 	private boolean hasHit = false;
 	
 	@Override
