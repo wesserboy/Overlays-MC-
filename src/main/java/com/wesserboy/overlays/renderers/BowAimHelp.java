@@ -2,6 +2,7 @@ package com.wesserboy.overlays.renderers;
 
 import org.lwjgl.opengl.GL11;
 
+import com.wesserboy.overlays.config.ConfigHandler;
 import com.wesserboy.overlays.entities.EntityDummyArrow;
 import com.wesserboy.overlays.helpers.ModRenderHelper;
 
@@ -33,7 +34,7 @@ public class BowAimHelp {
 	
 	@SubscribeEvent
 	public void render(RenderWorldLastEvent event){
-		if(theArrow != null){
+		if(ConfigHandler.BowAssistMode > 0 && theArrow != null){
 			RayTraceResult hit = theArrow.getHit();
 			
 			GL11.glPushMatrix();
@@ -116,7 +117,7 @@ public class BowAimHelp {
 	
 	@SubscribeEvent
 	public void renderAdvanced(RenderGameOverlayEvent.Post event){
-		if(theArrow != null){
+		if(ConfigHandler.BowAssistMode > 1 && theArrow != null){
 			if(event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR){
 				Minecraft mc = Minecraft.getMinecraft();
 				Entity player = mc.getRenderViewEntity();
