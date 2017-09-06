@@ -244,7 +244,11 @@ public class BowAimHelp {
 		        EntityDummyArrow arrow = new EntityDummyArrow(world, player);
 		        arrow.setAim(player, player.rotationPitch, player.rotationYaw, 0.0F, f * 3.0F, 0.0F);
 		        
-		        theArrow = arrow;
+		        if(arrow.getHit() != null){
+		        	theArrow = arrow;
+		        }else{
+		        	theArrow = null;
+		        }
 		        
 		        // Safety check for if the player changes to a different slot without releasing the mouse button
 		        if(!(player.getActiveItemStack().getItem() instanceof ItemBow)){

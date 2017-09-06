@@ -42,7 +42,7 @@ public class EntityDummyArrow extends EntityArrow{
 	private void calcPath(){
 		ArrayList<Vec3d> path = new ArrayList<Vec3d>();
 		
-		while(!this.hasHit){
+		while(!this.hasHit && this.posY > 0){
 			Vec3d pos = new Vec3d(this.posX, this.posY, this.posZ);
 			path.add(pos);
 			this.onUpdate();
