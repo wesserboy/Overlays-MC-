@@ -4,6 +4,7 @@ import org.lwjgl.input.Keyboard;
 
 import com.wesserboy.overlays.keybinds.ModKeybind;
 import com.wesserboy.overlays.keybinds.ModKeybindManager;
+import com.wesserboy.overlays.renderers.BowAimHelp;
 import com.wesserboy.overlays.renderers.ChunkOverlay;
 import com.wesserboy.overlays.renderers.LightLevelOverlay;
 
@@ -48,6 +49,9 @@ public class Overlays {
 				LightLevelOverlay.INSTANCE.toggleState();
 			}
 		});
+		
+		/** Bow aim helper **/
+		MinecraftForge.EVENT_BUS.register(new BowAimHelp());
 		
 		
 		ModKeybindManager.INSTANCE.registerKeybinds();
