@@ -2,6 +2,8 @@ package com.wesserboy.overlays.renderers;
 
 import org.lwjgl.opengl.GL11;
 
+import com.wesserboy.overlays.helpers.ModRenderHelper;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
@@ -35,12 +37,7 @@ public class ChunkOverlay {
 				
 				Entity player = Minecraft.getMinecraft().getRenderViewEntity();
 				
-				double x = player.lastTickPosX + (player.posX - player.lastTickPosX) * event.getPartialTicks();
-		        double y = player.lastTickPosY + (player.posY - player.lastTickPosY) * event.getPartialTicks();
-		        double z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * event.getPartialTicks();
-				
-				// translate draw origin to 0,0,0. This allows the use of world coords in draw calls.
-				GL11.glTranslated(-x, -y, -z);
+				ModRenderHelper.translateToWorldCoords(event.getPartialTicks());
 				
 				//translate draw origin to the center of the chunk the player is in
 				GL11.glTranslated(player.chunkCoordX * 16 + 8, 0, player.chunkCoordZ * 16 + 8);
@@ -78,8 +75,8 @@ public class ChunkOverlay {
 					// Green mesh
 					GL11.glColor3f(0F, 1F, 0F);
 					
-					int minY = (int) (y - 5);
-					int maxY = (int) (y + 5);
+					int minY = (int) (((int) player.posY) - 5);
+					int maxY = (int) (((int) player.posY) + 5);
 					
 					// Vertical
 					for(int i = minY; i <= maxY; i++){
