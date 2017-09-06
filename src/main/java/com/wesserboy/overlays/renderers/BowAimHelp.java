@@ -61,6 +61,7 @@ public class BowAimHelp {
 					Entity target = hit.entityHit;
 					// Get the position where the target was hit
 					Vec3d[] path = theArrow.getPath();
+					// Based on EntityArrow.findEntityOnPath
 					theActHit = target.getEntityBoundingBox().grow(0.30000001192092896D).calculateIntercept(path[path.length - 1], theArrow.getPositionVector());
 				};
 				
@@ -130,7 +131,7 @@ public class BowAimHelp {
 				GlStateManager.enableColorMaterial();
 				GlStateManager.pushMatrix();
 				
-					GlStateManager.translate(25F, mc.displayHeight / 2F - 10, 50F);
+					GlStateManager.translate(25F, event.getResolution().getScaledHeight_double() - 10, 50F);
 					GlStateManager.scale((float)(-30), (float)30, (float)30);
 					
 					GlStateManager.rotate(-player.rotationPitch, 1, 0, 0);
@@ -155,6 +156,7 @@ public class BowAimHelp {
 						if(!(target instanceof EntityFallingBlock)){
 							// Get the position where the target was hit
 							Vec3d[] path = theArrow.getPath();
+							// Based on EntityArrow.findEntityOnPath
 							RayTraceResult actHitCoords = target.getEntityBoundingBox().grow(0.30000001192092896D).calculateIntercept(path[path.length - 1], theArrow.getPositionVector());
 							
 							// Draw the arrow at that location
@@ -202,7 +204,7 @@ public class BowAimHelp {
 				EntityPlayer player = Minecraft.getMinecraft().player;
 				World world = player.world;
 				
-				
+				// Adapted from ItemBow.onPlayerStoppedUsing
 				int i = 72000 - player.getItemInUseCount();
 				
 				float f = ItemBow.getArrowVelocity(i);
