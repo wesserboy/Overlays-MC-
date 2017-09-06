@@ -154,6 +154,7 @@ public class BowAimHelp {
 						// Render the target
 						GlStateManager.enableAlpha();
 						GlStateManager.enableBlend();
+						GlStateManager.enableNormalize();
 						mc.getRenderManager().doRenderEntity(target, 0F, 0F, 0F, 0F, 1F, false);
 						
 						if(!(target instanceof EntityFallingBlock)){
