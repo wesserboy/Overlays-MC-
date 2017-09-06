@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 public class Overlays {
 	
 	public static final String MODID = "wesserboysoverlays";
-	public static final String MODNAME = "Overlays";
+	public static final String MODNAME = "Wesserboy's Overlays";
 	public static final String MODVERSION = "1.0.0.0";
 	
 	@Instance
