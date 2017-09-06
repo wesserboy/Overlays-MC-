@@ -6,15 +6,20 @@ import com.wesserboy.overlays.config.ConfigHandler;
 import com.wesserboy.overlays.entities.EntityDummyArrow;
 import com.wesserboy.overlays.helpers.ModRenderHelper;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.item.ItemBow;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -155,7 +160,28 @@ public class BowAimHelp {
 						GlStateManager.enableAlpha();
 						GlStateManager.enableBlend();
 						GlStateManager.enableNormalize();
-						mc.getRenderManager().doRenderEntity(target, 0F, 0F, 0F, 0F, 1F, false);
+						
+						if(!(target instanceof EntityFallingBlock)){
+							mc.getRenderManager().doRenderEntity(target, 0F, 0F, 0F, 0F, 1F, false);
+						}else{
+							EntityFallingBlock blockEntity = (EntityFallingBlock) target;
+							IBlockState state = blockEntity.getBlock();
+							Block block = state.getBlock();
+							
+							if(block.hasTileEntity(state)){
+								if(state.getRenderType() == EnumBlockRenderType.MODEL){
+									mc.getRenderManager().doRenderEntity(target, 0F, 0F, 0F, 0F, 1F, false);
+								}
+								TileEntity tile = player.world.getTileEntity(theArrow.getHit().getBlockPos());
+								if(tile != null){
+									if(TileEntityRendererDispatcher.instance.renderers.containsKey(tile.getClass())){
+										TileEntityRendererDispatcher.instance.render(tile, -0.5D, 0D, -0.5D, event.getPartialTicks());
+									}
+								}
+							}else{
+								mc.getRenderManager().doRenderEntity(target, 0F, 0F, 0F, 0F, 1F, false);
+							}
+						}
 						
 						if(!(target instanceof EntityFallingBlock)){
 							// Get the position where the target was hit
@@ -172,6 +198,10 @@ public class BowAimHelp {
 						}
 						mc.getRenderManager().doRenderEntity(fakeArrow, 0F, 0F, 0F, 0F, 1F, false);
 					}
+					
+					GlStateManager.disableAlpha();
+					GlStateManager.disableBlend();
+					GlStateManager.disableNormalize();
 					
 					mc.getRenderManager().setRenderShadow(true);
 					RenderHelper.disableStandardItemLighting();
