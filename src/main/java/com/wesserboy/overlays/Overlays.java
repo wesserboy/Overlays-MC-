@@ -7,6 +7,7 @@ import com.wesserboy.overlays.keybinds.ModKeybindManager;
 import com.wesserboy.overlays.renderers.BowAimHelp;
 import com.wesserboy.overlays.renderers.ChunkOverlay;
 import com.wesserboy.overlays.renderers.LightLevelOverlay;
+import com.wesserboy.overlays.renderers.SlimeChunkOverlay;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -52,6 +53,15 @@ public class Overlays {
 		
 		/** Bow aim helper **/
 		MinecraftForge.EVENT_BUS.register(new BowAimHelp());
+		
+		/** Slime chunk overlay **/
+		MinecraftForge.EVENT_BUS.register(new SlimeChunkOverlay());
+		ModKeybindManager.INSTANCE.addKeybind(new ModKeybind("slimechunkoverlay", Keyboard.KEY_F8){
+			@Override
+			public void onKeyPress() {
+				SlimeChunkOverlay.INSTANCE.toggleState();
+			}
+		});
 		
 		
 		ModKeybindManager.INSTANCE.registerKeybinds();
