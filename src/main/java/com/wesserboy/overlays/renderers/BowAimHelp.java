@@ -10,9 +10,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.IEntityMultiPart;
+import net.minecraft.entity.MultiPartEntityPart;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -20,6 +23,7 @@ import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.item.ItemBow;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -49,10 +53,6 @@ public class BowAimHelp {
 				GlStateManager.disableTexture2D();
 				GlStateManager.glLineWidth(1F);
 				
-				GL11.glBegin(GL11.GL_LINES);
-				
-				GL11.glColor3f(1F, 0F, 0F);
-				
 				double xOff1 = 0D;
 				double xOff2 = 0D;
 				double yOff1 = 0D;
@@ -71,48 +71,56 @@ public class BowAimHelp {
 					theActHit = target.getEntityBoundingBox().grow(0.30000001192092896D).calculateIntercept(path[path.length - 1], theArrow.getPositionVector());
 				};
 				
-				switch(theActHit.sideHit.getAxis()){
-				case X:
-					xOff1 = xOff2 = 0.01 * theActHit.sideHit.getAxisDirection().getOffset();
+				if(theActHit != null){ // This should not be possible, however the ender dragon sometimes manages to do this...
+					switch(theActHit.sideHit.getAxis()){
+					case X:
+						xOff1 = xOff2 = 0.01 * theActHit.sideHit.getAxisDirection().getOffset();
+						
+						yOff1 = 0.1D;
+						yOff2 = -0.1D;
+						
+						zOff1 = 0.1D;
+						zOff2 = -0.1D;
+						break;
+					case Y:
+						xOff1 = 0.1D;
+						xOff2 = -0.1D;
+						
+						yOff1 = yOff2 = 0.01 * theActHit.sideHit.getAxisDirection().getOffset();
+						
+						zOff1 = 0.1D;
+						zOff2 = -0.1D;
+						break;
+					case Z:
+						xOff1 = 0.1D;
+						xOff2 = -0.1D;
+						
+						yOff1 = 0.1D;
+						yOff2 = -0.1D;
+						
+						zOff1 = zOff2 = 0.01 * theActHit.sideHit.getAxisDirection().getOffset();
+						break;
+					}
 					
-					yOff1 = 0.1D;
-					yOff2 = -0.1D;
 					
-					zOff1 = 0.1D;
-					zOff2 = -0.1D;
-					break;
-				case Y:
-					xOff1 = 0.1D;
-					xOff2 = -0.1D;
 					
-					yOff1 = yOff2 = 0.01 * theActHit.sideHit.getAxisDirection().getOffset();
+					GL11.glBegin(GL11.GL_LINES);
 					
-					zOff1 = 0.1D;
-					zOff2 = -0.1D;
-					break;
-				case Z:
-					xOff1 = 0.1D;
-					xOff2 = -0.1D;
+					GL11.glColor3f(1F, 0F, 0F);
 					
-					yOff1 = 0.1D;
-					yOff2 = -0.1D;
+					Vec3d end = theActHit.hitVec;
 					
-					zOff1 = zOff2 = 0.01 * theActHit.sideHit.getAxisDirection().getOffset();
-					break;
+					GL11.glVertex3d(end.x + xOff1, end.y + yOff1, end.z + zOff1);
+					GL11.glVertex3d(end.x + xOff2, end.y + yOff2, end.z + zOff2);
+					
+					GL11.glVertex3d(end.x + xOff1, end.y + yOff2, end.z + zOff2);
+					GL11.glVertex3d(end.x + xOff2, end.y + yOff1, end.z + zOff1);
+					
+					GL11.glVertex3d(end.x + xOff2, end.y + yOff2, end.z + zOff1);
+					GL11.glVertex3d(end.x + xOff1, end.y + yOff1, end.z + zOff2);
+					
+					GL11.glEnd();
 				}
-				
-				Vec3d end = theActHit.hitVec;
-				
-				GL11.glVertex3d(end.x + xOff1, end.y + yOff1, end.z + zOff1);
-				GL11.glVertex3d(end.x + xOff2, end.y + yOff2, end.z + zOff2);
-				
-				GL11.glVertex3d(end.x + xOff1, end.y + yOff2, end.z + zOff2);
-				GL11.glVertex3d(end.x + xOff2, end.y + yOff1, end.z + zOff1);
-				
-				GL11.glVertex3d(end.x + xOff2, end.y + yOff2, end.z + zOff1);
-				GL11.glVertex3d(end.x + xOff1, end.y + yOff1, end.z + zOff2);
-				
-				GL11.glEnd();
 				
 				GlStateManager.enableTexture2D();
 			
@@ -130,14 +138,23 @@ public class BowAimHelp {
 				RayTraceResult hit = theArrow.getHit();
 				Entity target = hit.entityHit;
 				
+				if(target instanceof MultiPartEntityPart){
+					MultiPartEntityPart part = (MultiPartEntityPart) target;
+					IEntityMultiPart parent = part.parent;
+					if(parent instanceof Entity){
+						target = (Entity) parent;
+					}
+				}
+				
 				if(target == null){
 					target = new EntityFallingBlock(player.world, 0, 0, 0, player.world.getBlockState(theArrow.getHit().getBlockPos()));
 				}
 				
-				GlStateManager.enableColorMaterial();
 				GlStateManager.pushMatrix();
 				
-					GlStateManager.translate(25F, event.getResolution().getScaledHeight_double() - 10, 50F);
+				GlStateManager.enableColorMaterial();
+				
+					GlStateManager.translate(30F, event.getResolution().getScaledHeight_double() - 15F, 50F);
 					GlStateManager.scale((float)(-30), (float)30, (float)30);
 					
 					GlStateManager.rotate(-player.rotationPitch, 1, 0, 0);
@@ -161,6 +178,11 @@ public class BowAimHelp {
 						GlStateManager.enableBlend();
 						GlStateManager.enableNormalize();
 						
+						// Scale down entities that are too large (looking at you ender dragon >:( )
+						AxisAlignedBB renderBox = target.getRenderBoundingBox();
+						double scale = renderBox.getAverageEdgeLength() > 1.5D ? 1.5D / renderBox.getAverageEdgeLength() : 1D;
+						GlStateManager.scale(scale, scale, scale);
+						
 						if(!(target instanceof EntityFallingBlock)){
 							mc.getRenderManager().doRenderEntity(target, 0F, 0F, 0F, 0F, 1F, false);
 						}else{
@@ -176,6 +198,7 @@ public class BowAimHelp {
 								if(tile != null){
 									if(TileEntityRendererDispatcher.instance.renderers.containsKey(tile.getClass())){
 										TileEntityRendererDispatcher.instance.render(tile, -0.5D, 0D, -0.5D, event.getPartialTicks());
+										GlStateManager.disableFog();
 									}
 								}
 							}else{
@@ -189,8 +212,10 @@ public class BowAimHelp {
 							// Based on EntityArrow.findEntityOnPath
 							RayTraceResult actHitCoords = target.getEntityBoundingBox().grow(0.30000001192092896D).calculateIntercept(path[path.length - 1], theArrow.getPositionVector());
 							
-							// Draw the arrow at that location
-							GlStateManager.translate(-(target.posX - actHitCoords.hitVec.x), -(target.posY - actHitCoords.hitVec.y), -(target.posZ - actHitCoords.hitVec.z));
+							if(actHitCoords != null){ // This should not be possible, however the ender dragon sometimes manages to do this...
+								// Draw the arrow at that location
+								GlStateManager.translate(-(target.posX - actHitCoords.hitVec.x), -(target.posY - actHitCoords.hitVec.y), -(target.posZ - actHitCoords.hitVec.z));
+							}
 						}else{
 							BlockPos pos = hit.getBlockPos();
 							GlStateManager.translate(-0.5, 0, -0.5);
@@ -199,6 +224,7 @@ public class BowAimHelp {
 						mc.getRenderManager().doRenderEntity(fakeArrow, 0F, 0F, 0F, 0F, 1F, false);
 					}
 					
+					
 					GlStateManager.disableAlpha();
 					GlStateManager.disableBlend();
 					GlStateManager.disableNormalize();
@@ -206,6 +232,10 @@ public class BowAimHelp {
 					mc.getRenderManager().setRenderShadow(true);
 					RenderHelper.disableStandardItemLighting();
 					
+					GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+			        GlStateManager.disableTexture2D();
+			        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+
 				GlStateManager.popMatrix();
 			}
 		}
