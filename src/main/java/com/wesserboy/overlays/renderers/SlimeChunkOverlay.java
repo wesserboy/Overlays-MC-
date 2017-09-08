@@ -1,7 +1,5 @@
 package com.wesserboy.overlays.renderers;
 
-import org.lwjgl.opengl.GL11;
-
 import com.wesserboy.overlays.helpers.ModRenderHelper;
 
 import net.minecraft.client.Minecraft;
