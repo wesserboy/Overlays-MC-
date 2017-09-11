@@ -7,7 +7,10 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -48,39 +51,49 @@ public class SlimeChunkOverlay {
 			int minZ = cChunkZ - radius;
 			int maxZ = cChunkZ + radius;
 			
-			for(int x = minX; x <= maxX; x++){
-				for(int z = minZ; z <= maxZ; z++){
-					Chunk chunk = player.world.getChunkFromChunkCoords(x, z);
-					
-					// See EntitySlime.getCanSpawnHere
-					if(chunk.getRandomWithSeed(987234911L).nextInt(10) == 0){
+			if(mc.getIntegratedServer() != null){
+				
+				World world = mc.getIntegratedServer().getWorld(player.world.provider.getDimension());
+				
+				for(int x = minX; x <= maxX; x++){
+					for(int z = minZ; z <= maxZ; z++){
+						Chunk chunk = world.getChunkFromChunkCoords(x, z);
 						
-						EntitySlime fakeSlime = new EntitySlime(player.world);
-						fakeSlime.prevRotationYawHead = fakeSlime.rotationYawHead = 0;
-						setSlimeSize(fakeSlime, 3);
-						
-						GlStateManager.pushMatrix();
-						
-							GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
-					        GlStateManager.disableTexture2D();
-					        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
-						
-							ModRenderHelper.translateToWorldCoords(event.getPartialTicks());
-							GlStateManager.translate(x * 16 + 8, 0, z * 16 + 8); // translate to the center of the chunk
+						// See EntitySlime.getCanSpawnHere
+						if(chunk.getRandomWithSeed(987234911L).nextInt(10) == 0){
 							
+							EntitySlime fakeSlime = new EntitySlime(player.world);
+							fakeSlime.prevRotationYawHead = fakeSlime.rotationYawHead = 0;
+							setSlimeSize(fakeSlime, 3);
 							
-							double pY = player.prevPosY + (player.posY - player.prevPosY) * event.getPartialTicks();
-							GlStateManager.translate(0, pY + 2 + yOff, 0);
-							GlStateManager.rotate(rotation, 0F, 1F, 0F);
+							GlStateManager.pushMatrix();
 							
-							GlStateManager.color(1F, 1F, 1F, 0.15F);
+								GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+						        GlStateManager.disableTexture2D();
+						        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
 							
-							GlStateManager.enableBlend();
-							mc.getRenderManager().doRenderEntity(fakeSlime, 0, 0, 0, 0F, event.getPartialTicks(), false);
-							
-							
-						GlStateManager.popMatrix();
+								ModRenderHelper.translateToWorldCoords(event.getPartialTicks());
+								GlStateManager.translate(x * 16 + 8, 0, z * 16 + 8); // translate to the center of the chunk
+								
+								
+								double pY = player.prevPosY + (player.posY - player.prevPosY) * event.getPartialTicks();
+								GlStateManager.translate(0, pY + 2 + yOff, 0);
+								GlStateManager.rotate(rotation, 0F, 1F, 0F);
+								
+								GlStateManager.color(1F, 1F, 1F, 0.15F);
+								
+								GlStateManager.enableBlend();
+								mc.getRenderManager().doRenderEntity(fakeSlime, 0, 0, 0, 0F, event.getPartialTicks(), false);
+								
+								
+							GlStateManager.popMatrix();
+						}
 					}
+				}
+			}else{
+				if(player instanceof EntityPlayer){
+					((EntityPlayer) player).sendStatusMessage(new TextComponentTranslation("message.slimechunk.multiplayer"), true);
+					this.state = false;
 				}
 			}
 		}
