@@ -23,7 +23,7 @@ public class Overlays {
 	
 	public static final String MODID = "wesserboysoverlays";
 	public static final String MODNAME = "Wesserboy's Overlays";
-	public static final String MODVERSION = "1.0.0.0";
+	public static final String MODVERSION = "1.0.0.1";
 	
 	@Instance
 	public static Overlays INSTANCE;
