@@ -4,7 +4,7 @@ import com.wesserboy.overlays.Overlays;
 
 import net.minecraft.client.settings.KeyBinding;
 
-public class ModKeybind {
+public abstract class ModKeybind {
 	
 	protected KeyBinding keyBinding;
 	
@@ -12,7 +12,7 @@ public class ModKeybind {
 		keyBinding = new KeyBinding("key." + Overlays.MODID + "." + name, defaultKey, "key.categories." + Overlays.MODID);
 	}
 	
-	// Called from the keyInputHandler when the key is pressed
-	public void onKeyPress(){}
+	// Called by the ModKeybindManager when the key is pressed
+	public abstract void onKeyPress();
 	
 }

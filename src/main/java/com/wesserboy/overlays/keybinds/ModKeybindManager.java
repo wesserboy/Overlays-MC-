@@ -2,9 +2,9 @@ package com.wesserboy.overlays.keybinds;
 
 import java.util.ArrayList;
 
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
 
 public class ModKeybindManager {
 	

@@ -2,19 +2,21 @@ package com.wesserboy.overlays.entities;
 
 import java.util.ArrayList;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class EntityDummyArrow extends EntityArrow{
+public class EntityDummyArrow extends AbstractArrowEntity{
 
-	public EntityDummyArrow(World worldIn, EntityLivingBase shooter) {
-		super(worldIn, shooter);
+	public EntityDummyArrow(World worldIn, LivingEntity shooter) {
+		super(EntityType.ARROW, shooter, worldIn);
 		
-		this.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
+		this.pickupStatus = ArrowEntity.PickupStatus.DISALLOWED;
 	}
 
 	@Override
@@ -35,8 +37,10 @@ public class EntityDummyArrow extends EntityArrow{
 	
 	@Override
 	protected void onHit(RayTraceResult result) {
-		hasHit = true;
-		this.hitResult = result;
+		if(result.getType() != RayTraceResult.Type.MISS) {
+			hasHit = true;
+			this.hitResult = result;
+		}
 	}
 	
 	private void calcPath(){
@@ -45,7 +49,7 @@ public class EntityDummyArrow extends EntityArrow{
 		while(!this.hasHit && this.posY > 0){
 			Vec3d pos = new Vec3d(this.posX, this.posY, this.posZ);
 			path.add(pos);
-			this.onUpdate();
+			this.tick();
 		}
 		
 		this.path =  path.toArray(new Vec3d[path.size()]);

@@ -2,13 +2,13 @@ package com.wesserboy.overlays.renderers;
 
 import org.lwjgl.opengl.GL11;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.wesserboy.overlays.helpers.ModRenderHelper;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ChunkOverlay {
 	
@@ -35,15 +35,15 @@ public class ChunkOverlay {
 		if(mode > 0){
 			GL11.glPushMatrix();
 				
-				Entity player = Minecraft.getMinecraft().getRenderViewEntity();
+				Entity player = Minecraft.getInstance().getRenderViewEntity();
 				
 				ModRenderHelper.translateToWorldCoords(event.getPartialTicks());
 				
 				//translate draw origin to the center of the chunk the player is in
 				GL11.glTranslated(player.chunkCoordX * 16 + 8, 0, player.chunkCoordZ * 16 + 8);
 				
-				GlStateManager.disableTexture2D();
-				GlStateManager.glLineWidth(1F);
+				GlStateManager.disableTexture();
+				GlStateManager.lineWidth(1F);
 				
 				GL11.glBegin(GL11.GL_LINES);
 				
@@ -126,7 +126,7 @@ public class ChunkOverlay {
 				
 				GL11.glEnd();
 				
-				GlStateManager.enableTexture2D();
+				GlStateManager.enableTexture();
 			
 			GL11.glPopMatrix();
 		}

@@ -1,7 +1,8 @@
 package com.wesserboy.overlays;
 
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
+import com.wesserboy.overlays.config.ConfigHandler;
 import com.wesserboy.overlays.keybinds.ModKeybind;
 import com.wesserboy.overlays.keybinds.ModKeybindManager;
 import com.wesserboy.overlays.renderers.BowAimHelp;
@@ -11,31 +12,28 @@ import com.wesserboy.overlays.renderers.SlimeChunkOverlay;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-@Mod(modid = Overlays.MODID, 
-	 name = Overlays.MODNAME, 
-	 version = Overlays.MODVERSION,
-	 clientSideOnly = true)
+@Mod(Overlays.MODID)
 public class Overlays {
 	
 	public static final String MODID = "wesserboysoverlays";
-	public static final String MODNAME = "Wesserboy's Overlays";
-	public static final String MODVERSION = "1.0.0.1";
 	
-	@Instance
-	public static Overlays INSTANCE;
+	public Overlays() {
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
+		ConfigHandler.init();
+	}
 	
-	@EventHandler
-	public static void init(FMLInitializationEvent event){
+	private void init(FMLClientSetupEvent event){
+		ConfigHandler.load();
+		
 		MinecraftForge.EVENT_BUS.register(new ModKeybindManager());
 		
 		/** Chunk overlay **/
 		MinecraftForge.EVENT_BUS.register(new ChunkOverlay());
 		
-		ModKeybindManager.INSTANCE.addKeybind(new ModKeybind("chunkoverlay", Keyboard.KEY_F9){
+		ModKeybindManager.INSTANCE.addKeybind(new ModKeybind("chunkoverlay", GLFW.GLFW_KEY_F9){
 			@Override
 			public void onKeyPress() {
 				ChunkOverlay.INSTANCE.cycleMode();
@@ -44,7 +42,7 @@ public class Overlays {
 		
 		/** Light level overlay **/
 		MinecraftForge.EVENT_BUS.register(new LightLevelOverlay());
-		ModKeybindManager.INSTANCE.addKeybind(new ModKeybind("lightleveloverlay", Keyboard.KEY_F7){
+		ModKeybindManager.INSTANCE.addKeybind(new ModKeybind("lightleveloverlay", GLFW.GLFW_KEY_F7){
 			@Override
 			public void onKeyPress() {
 				LightLevelOverlay.INSTANCE.toggleState();
@@ -56,13 +54,12 @@ public class Overlays {
 		
 		/** Slime chunk overlay **/
 		MinecraftForge.EVENT_BUS.register(new SlimeChunkOverlay());
-		ModKeybindManager.INSTANCE.addKeybind(new ModKeybind("slimechunkoverlay", Keyboard.KEY_F8){
+		ModKeybindManager.INSTANCE.addKeybind(new ModKeybind("slimechunkoverlay", GLFW.GLFW_KEY_F8){
 			@Override
 			public void onKeyPress() {
 				SlimeChunkOverlay.INSTANCE.toggleState();
 			}
 		});
-		
 		
 		ModKeybindManager.INSTANCE.registerKeybinds();
 	}
