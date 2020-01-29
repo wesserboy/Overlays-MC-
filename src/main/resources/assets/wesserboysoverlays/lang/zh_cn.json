@@ -1,0 +1,10 @@
+{
+    "_comment": "Keybindings",
+    "key.categories.wesserboysoverlays": "Wesserboy的更多信息显示",
+    "key.wesserboysoverlays.chunkoverlay": "显示区块边界",
+    "key.wesserboysoverlays.lightleveloverlay": "显示亮度等级",
+    "key.wesserboysoverlays.slimechunkoverlay": "显示史莱姆区块",
+
+    "_comment": "Error messages",
+    "message.slimechunk.multiplayer": "此显示设置无法用于多人游戏，不便之处，敬请见谅！"
+}
